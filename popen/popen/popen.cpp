@@ -5,6 +5,21 @@
 #include <array>
 #include <windows.h>
 
+// child process source code
+//#include <iostream>
+//#include <windows.h>
+//
+//using namespace std;
+//
+//int main(int argc, char** argv)
+//{
+//	for (int i = 1; i <= 10; ++i)
+//	{
+//		cout << i << endl;
+//		Sleep(1000);
+//	}
+//}
+
 //https://stackoverflow.com/questions/44610978/popen-writes-output-of-command-executed-to-cout
 int main()
 {
@@ -14,7 +29,7 @@ int main()
 
 	// modify current directory with SetCurrentDirectory()
 
-	std::string command("dummy.exe");
+	std::string command("child.exe");
 
 	std::array<char, 128> buffer;
 	std::string result;
@@ -27,7 +42,7 @@ int main()
 		return 0;
 	}
 	while (fgets(buffer.data(), 128, pipe) != NULL) {
-		std::cout << "Reading... : " << buffer.data() << std::endl;
+		std::cout << "Reading... : " << buffer.data();
 		result += buffer.data();
 	}
 	auto returnCode = _pclose(pipe);
