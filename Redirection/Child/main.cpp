@@ -1,5 +1,7 @@
 #include <iostream>
 #include <windows.h>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -11,12 +13,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	for (int i = 0; i < 3; ++i)
-	{
-		cout << "hello " << i << endl;
-		Sleep(1000);
-	}
+	std::string str;
+	str.resize(10000);
 	
-	return 0;
+	while (1)
+	{
+		str.clear();
+		std::getline(std::cin, str);
+		MessageBoxA(0, str.c_str(), str.c_str(), MB_OK);
+		cout << str << endl;
+	}
 
+	return 0;
 }

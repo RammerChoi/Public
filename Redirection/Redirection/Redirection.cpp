@@ -9,6 +9,7 @@ HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING];
 WCHAR szWindowClass[MAX_LOADSTRING];
 HANDLE g_hChildStdOutRead = NULL;
+HANDLE g_hChildStdInWrite = NULL;
 std::string g_str = _T("Plz click \"Tool\" -> \"CreateSubProcess\"");
 
 #define BUFSIZE 4096 
@@ -94,7 +95,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 bool CreateRedirectedChildProcess(HWND hWnd)
 {
 	HANDLE hChildStdInRead = NULL;
-	HANDLE hChildStdInWrite = NULL;
 	HANDLE hChildStdOutWrite = NULL;
 
 	SECURITY_ATTRIBUTES saAttr;
@@ -117,12 +117,12 @@ bool CreateRedirectedChildProcess(HWND hWnd)
 
 	// Create a pipe for the child process's STDIN. 
 
-	if (!CreatePipe(&hChildStdInRead, &hChildStdInWrite, &saAttr, 0))
+	if (!CreatePipe(&hChildStdInRead, &g_hChildStdInWrite, &saAttr, 0))
 		return false;
 
 	// Ensure the write handle to the pipe for STDIN is not inherited. 
 
-	if (!SetHandleInformation(hChildStdInWrite, HANDLE_FLAG_INHERIT, 0))
+	if (!SetHandleInformation(g_hChildStdInWrite, HANDLE_FLAG_INHERIT, 0))
 		return false;
 
 	// Create the child process. 
@@ -210,7 +210,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DWORD dwRead, dwWritten;
 			CHAR chBuf[BUFSIZE] = { 0, };
 			
-			bool bSuccess = ReadFile(g_hChildStdOutRead, chBuf, BUFSIZE, &dwRead, NULL);
+			char* p = "hello world\n";
+			bool bSuccess = WriteFile(g_hChildStdInWrite, p, strlen(p), &dwWritten, nullptr);
+
+			bSuccess = ReadFile(g_hChildStdOutRead, chBuf, BUFSIZE, &dwRead, NULL);
 			if (!bSuccess || dwRead == 0)
 			{
 				g_str = _T("Finished");
